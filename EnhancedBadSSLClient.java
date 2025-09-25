@@ -145,11 +145,11 @@ public class EnhancedBadSSLClient {
                     expectedFailures++;
                     break;
                 case UNEXPECTED:
-                    System.out.println("   ❓ UNEXPECTED: " + result.message);
+                    System.out.println("   ? UNEXPECTED: " + result.message);
                     unexpectedResults++;
                     break;
                 case ERROR:
-                    System.out.println("   ❌ ERROR: " + result.message);
+                    System.out.println("   X ERROR: " + result.message);
                     break;
             }
             System.out.println();
@@ -158,10 +158,10 @@ public class EnhancedBadSSLClient {
         // Summary
         System.out.println("=== Test Summary ===");
         System.out.println("Total Endpoints Tested: " + BADSSL_ENDPOINTS.size());
-        System.out.println("✅ Successful Connections: " + successCount);
-        System.out.println("⚠ Expected Failures: " + expectedFailures);
-        System.out.println("❓ Unexpected Results: " + unexpectedResults);
-        System.out.println("\n💡 Note: Many failures are EXPECTED as BadSSL is designed to test various SSL/TLS scenarios.");
+        System.out.println("OK Successful Connections: " + successCount);
+        System.out.println("! Expected Failures: " + expectedFailures);
+        System.out.println("? Unexpected Results: " + unexpectedResults);
+        System.out.println("\nNote: Many failures are EXPECTED as BadSSL is designed to test various SSL/TLS scenarios.");
     }
     
     private TestResult testEndpoint(TestEndpoint endpoint) {

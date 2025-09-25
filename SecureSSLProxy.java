@@ -392,8 +392,8 @@ public class SecureSSLProxy {
                    ".info{background:#ecf0f1;padding:15px;border-radius:5px;margin:10px 0;}" +
                    "</style></head><body>" +
                    "<div class='container'>" +
-                   "<h1>🔐 Secure SSL Proxy Response</h1>" +
-                   "<p class='success'>✅ Connection successful with enhanced security!</p>" +
+                   "<h1>Secure SSL Proxy Response</h1>" +
+                   "<p class='success'>Connection successful with enhanced security!</p>" +
                    "<div class='info'>" +
                    "<strong>Connection Details:</strong><br>" +
                    "Protocol: " + session.getProtocol() + "<br>" +

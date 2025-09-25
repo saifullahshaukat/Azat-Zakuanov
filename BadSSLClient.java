@@ -143,10 +143,8 @@ public class BadSSLClient {
                 System.out.println("✅ SUCCESS: Connected to client.badssl.com successfully!");
             } else if (responseStr.contains("HTTP/1.1 404")) {
                 System.out.println("⚠ 404 Error: The requested page was not found");
-                System.out.println("💡 Try different endpoints:");
+                System.out.println("💡 Note: client.badssl.com only serves the root endpoint:");
                 System.out.println("   - https://client.badssl.com/");
-                System.out.println("   - https://client.badssl.com/dashboard");
-                System.out.println("   - https://client.badssl.com/json");
             } else {
                 System.out.println("⚠ Unexpected response received");
             }
@@ -154,7 +152,7 @@ public class BadSSLClient {
             socket.close();
             
         } catch (Exception e) {
-            System.err.println("❌ Connection failed: " + e.getMessage());
+            System.err.println("X Connection failed: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -163,9 +161,9 @@ public class BadSSLClient {
      * Test different endpoints on client.badssl.com
      */
     public void testDifferentEndpoints() {
-        String[] endpoints = {"/", "/dashboard", "/json", "/api", "/test"};
+        String[] endpoints = {"/"}; // Only test root endpoint as it's the only one that exists
         
-        System.out.println("\n=== Testing Different Endpoints ===");
+        System.out.println("\n=== Testing Available Endpoints ===");
         
         for (String endpoint : endpoints) {
             System.out.println("\nTesting: https://" + TARGET_HOST + endpoint);
@@ -193,9 +191,9 @@ public class BadSSLClient {
             System.out.println("  Status: " + statusLine);
             
             if (statusLine != null && statusLine.contains("200")) {
-                System.out.println("  ✅ Endpoint available");
+                System.out.println("  OK Endpoint available");
             } else if (statusLine != null && statusLine.contains("404")) {
-                System.out.println("  ❌ Endpoint not found");
+                System.out.println("  X Endpoint not found");
             } else {
                 System.out.println("  ⚠ Unexpected response: " + statusLine);
             }
@@ -203,7 +201,7 @@ public class BadSSLClient {
             socket.close();
             
         } catch (Exception e) {
-            System.out.println("  ❌ Error: " + e.getMessage());
+            System.out.println("  X Error: " + e.getMessage());
         }
     }
     
@@ -216,7 +214,7 @@ public class BadSSLClient {
         System.out.println("Enter endpoints to test (or 'quit' to exit):");
         
         while (true) {
-            System.out.print("Endpoint (e.g., /api/status): ");
+            System.out.print("Endpoint (e.g., /): ");
             String input = scanner.nextLine().trim();
             
             if ("quit".equalsIgnoreCase(input)) {
