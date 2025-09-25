@@ -32,41 +32,55 @@ case "$1" in
     "clean")
         clean
         ;;
-    "client")
+    "badssl")
         compile_all
-        echo "Running P12 SSL Client..."
-        java P12SSLClient
+        echo "Running BadSSL Client Test..."
+        java BadSSLClient
         ;;
-    "proxy")
+    "enhanced")
         compile_all
-        echo "Starting P12 SSL Proxy on port 8444..."
-        java P12SSLProxy
+        echo "Running Enhanced BadSSL Client Test..."
+        java EnhancedBadSSLClient
         ;;
-    "test")
+    "secure")
         compile_all
-        echo "Running proxy test client..."
-        java ProxyTestClient
+        echo "Starting Secure SSL Proxy on port 8444..."
+        java SecureSSLProxy
         ;;
-    "suite")
+    "dashboard")
         compile_all
-        echo "Running complete test suite..."
-        java ProxyTestSuite
+        echo "Starting Dashboard Server on port 8080..."
+        echo "Open http://localhost:8080 in your browser"
+        java DashboardServer
+        ;;
+    "full")
+        compile_all
+        echo "Starting both Secure SSL Proxy and Dashboard..."
+        echo "Dashboard: http://localhost:8080"
+        echo "SSL Proxy: https://localhost:8444"
+        java DashboardServer &
+        sleep 2
+        java SecureSSLProxy
         ;;
     *)
-        echo "Usage: $0 {compile|clean|client|proxy|test|suite}"
+        echo "Usage: $0 {compile|clean|badssl|enhanced|secure|dashboard|full}"
         echo ""
         echo "Commands:"
-        echo "  compile  - Compile all Java files"
-        echo "  clean    - Remove compiled .class files"
-        echo "  client   - Run P12 SSL Client"
-        echo "  proxy    - Start P12 SSL Proxy server"
-        echo "  test     - Run proxy test client"
-        echo "  suite    - Run complete test suite"
+        echo "  compile   - Compile all Java files"
+        echo "  clean     - Remove compiled .class files"
+        echo "  badssl    - Run BadSSL Client Test"
+        echo "  enhanced  - Run Enhanced BadSSL Client Test"
+        echo "  secure    - Start Secure SSL Proxy server"
+        echo "  dashboard - Start Web Dashboard on port 8080"
+        echo "  full      - Start both Dashboard and Secure SSL Proxy"
         echo ""
         echo "Examples:"
         echo "  ./run.sh compile     # Compile all files"
-        echo "  ./run.sh client      # Test SSL client with P12 certificate"
-        echo "  ./run.sh proxy       # Start SSL proxy server"
+        echo "  ./run.sh secure      # Start secure SSL proxy server"
+        echo "  ./run.sh dashboard   # Start web dashboard"
+        echo "  ./run.sh full        # Start both dashboard and secure proxy"
+        echo "  ./run.sh badssl      # Test BadSSL connection"
+        echo "  ./run.sh enhanced    # Run enhanced BadSSL tests"
         exit 1
         ;;
 esac

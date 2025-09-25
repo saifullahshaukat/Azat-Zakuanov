@@ -1,194 +1,325 @@
-#  Java SSL with P12 Certificate
+# Java SSL Proxy Project
 
-Java SSL implementation with P12 certificate support for client authentication and SSL proxy functionality.
+A secure SSL proxy server with client certificate authentication and web dashboard for testing SSL/TLS connections with client certificates.
 
 ![Java](https://img.shields.io/badge/Java-ED8B00?logo=java&logoColor=white)
 ![SSL](https://img.shields.io/badge/SSL-TLS-green)
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 
+## Quick Start
+
+### Prerequisites
+- Java 8 or higher
+- Client certificate file (PKCS#12 format)
+
+### Running the Application
+
+1. **Start Secure SSL Proxy:**
+   ```bash
+   ./run.sh secure
+   ```
+
+2. **Start Web Dashboard:**
+   ```bash
+   ./run.sh dashboard
+   ```
+
+3. **Start Both (Recommended):**
+   ```bash
+   ./run.sh full
+   ```
+
 ## Features
 
-- **TLS 1.2/1.3** - Modern SSL/TLS protocols
-- **P12 Certificates** - PKCS#12 certificate authentication
-- **SSL Proxy** - Multi-threaded SSL proxy server
-- **Client Auth** - Mutual TLS with client certificates
-- **Strong Encryption** - AES-256-GCM cipher suites
+- Secure SSL/TLS proxy with client certificate authentication
+- Web dashboard with real-time monitoring
+- BadSSL.com integration for testing SSL connections
+- Comprehensive security features including rate limiting
+- IP whitelisting and access control
+- Modern Tailwind CSS web interface
+- TLS 1.2/1.3 protocol support
+- PKCS#12 certificate support
+- Multiple SSL testing endpoints
 
-##  Quick Start
+## Project Structure
 
-### Requirements
-- Java 8+
-- Included P12 certificate: `badssl.com-client.p12` (password: `badssl.com`)
+```
+java-ssl/
+├── Core Files
+│   ├── SecureSSLProxy.java      # Main SSL proxy server
+│   ├── DashboardServer.java     # Web dashboard server  
+│   └── index.html               # Web dashboard interface
+├── Test Clients
+│   ├── BadSSLClient.java        # BadSSL test client
+│   └── EnhancedBadSSLClient.java # Enhanced BadSSL testing
+├── Certificates
+│   ├── badssl.com-client.p12    # Client certificate (PKCS#12)
+│   ├── client-cert.pem         # PEM certificate
+│   └── client-key.pem          # PEM private key
+├── Scripts
+│   ├── run.sh                  # Build and run script
+│   └── browser_setup.sh        # Browser certificate setup
+└── Documentation
+    └── README.md               # Complete project documentation
+```
 
-### Setup
+## Configuration
+
+Environment variables:
+- `SSL_CERT_PASSWORD` - Certificate password (default: badssl.com)
+- `PROXY_PORT` - SSL proxy port (default: 8444)
+- `DASHBOARD_PORT` - Web dashboard port (default: 8080)
+
+## Available Commands
+
 ```bash
-git clone https://github.com
-cd java-ssl
+# Compile all files
 ./run.sh compile
+
+# Start secure proxy only
+./run.sh secure
+
+# Start dashboard only  
+./run.sh dashboard
+
+# Start both services
+./run.sh full
+
+# Test BadSSL connection
+./run.sh badssl
+
+# Run enhanced BadSSL tests
+./run.sh enhanced
+
+# Clean compiled files
+./run.sh clean
 ```
 
-##  Usage
+## Testing with Curl Commands
 
-### Easy Commands
+### Basic BadSSL Testing
 ```bash
-./run.sh client     # Test SSL client with P12 certificate
-./run.sh proxy      # Start SSL proxy server (port 8444)
-./run.sh test       # Run proxy tests
-./run.sh clean      # Remove compiled files
+# Test successful client certificate authentication
+curl -v --cert client-cert.pem --key client-key.pem https://client.badssl.com/
+
+# Test with connection timeout (recommended)
+curl -v --cert client-cert.pem --key client-key.pem --connect-timeout 10 https://client.badssl.com/
+
+# Test with specific TLS version
+curl -v --cert client-cert.pem --key client-key.pem --tlsv1.2 https://client.badssl.com/
+curl -v --cert client-cert.pem --key client-key.pem --tlsv1.3 https://client.badssl.com/
 ```
 
-### Manual Commands
+### Advanced BadSSL Testing
 ```bash
-# SSL Client with P12 Certificate
-java P12SSLClient
+# Show only response headers
+curl -I --cert client-cert.pem --key client-key.pem https://client.badssl.com/
 
-# SSL Proxy Server  
-java P12SSLProxy
+# Test with maximum verbosity and save output
+curl -v --cert client-cert.pem --key client-key.pem https://client.badssl.com/ > test_output.html 2>&1
 
-# Advanced SSL Proxy
-java AdvancedSSLProxy
+# Test SSL handshake details
+curl -v --cert client-cert.pem --key client-key.pem --ssl-reqd https://client.badssl.com/
 
-# Basic SSL Proxy
-# Basic SSL Proxy
-java SSLProxy
+# Test with custom user agent
+curl -v --cert client-cert.pem --key client-key.pem -A "SSL-Test-Client/1.0" https://client.badssl.com/
 ```
 
-##  Project Structure
+### Testing Other BadSSL Endpoints
+```bash
+# Test different SSL configurations (these should fail without client cert)
+curl -v https://expired.badssl.com/
+curl -v https://wrong.host.badssl.com/
+curl -v https://self-signed.badssl.com/
+curl -v https://untrusted-root.badssl.com/
 
-```
-java-ssl/
-├── SSLProxy.java              # Basic SSL proxy
-├── AdvancedSSLProxy.java      # Advanced SSL proxy with client certs
-├── P12SSLProxy.java           # P12 certificate-enabled proxy
-├── P12SSLClient.java          # SSL client with P12 authentication
-├── ProxyTestClient.java       # Proxy test client
-├── ProxyTestSuite.java        # Test suite
-├── badssl.com-client.p12      # P12 certificate file
-├── run.sh                     # Build and run script
-└── README.md                  # This file
+# Test cipher suites
+curl -v --ciphers ECDHE-RSA-AES256-GCM-SHA384 --cert client-cert.pem --key client-key.pem https://client.badssl.com/
 ```
 
-##  Code Examples
+### Expected Results
+```bash
+# Successful connection (HTTP 200)
+< HTTP/1.1 200 OK
+< Server: nginx/1.10.3 (Ubuntu)
+< Content-Type: text/html
 
-### P12 Certificate Loading
-```java
-KeyStore keyStore = KeyStore.getInstance("PKCS12");
-keyStore.load(new FileInputStream("badssl.com-client.p12"), "badssl.com".toCharArray());
+# SSL handshake information
+* SSL connection using TLSv1.2 / ECDHE-RSA-AES256-GCM-SHA384
+* Server certificate: *.badssl.com
 ```
 
-### SSL Context Creation
-```java
-SSLContext sslContext = SSLContext.getInstance("TLS");
-sslContext.init(keyManagerFactory.getKeyManagers(), trustManagers, new SecureRandom());
+### Java Testing
+```bash
+# Run BadSSL client test
+./run.sh badssl
+
+# Run enhanced tests with multiple endpoints
+./run.sh enhanced
 ```
 
-### SSL Server Setup
-```java
-SSLServerSocket serverSocket = (SSLServerSocket) factory.createServerSocket(8444);
-serverSocket.setWantClientAuth(true);
+### Testing SSL Proxy
+```bash
+# Start the SSL proxy first
+./run.sh secure
+
+# Then test through the proxy (in another terminal)
+curl -v --cert client-cert.pem --key client-key.pem --proxy https://localhost:8444 https://client.badssl.com/
 ```
 
-##  Configuration
+## Browser Setup
 
-- **Port**: 8444 (SSL Proxy)
-- **Protocols**: TLS 1.2, TLS 1.3  
-- **Ciphers**: AES-256-GCM, AES-128-GCM
-- **Certificate**: BadSSL Client Certificate (valid until 2027)
+To access BadSSL websites in your browser with client certificate authentication:
 
-## Testing
+### Setup Steps
+
+1. **Run the browser setup helper:**
+   ```bash
+   ./browser_setup.sh
+   ```
+
+2. **Firefox (Recommended):**
+   - Open Firefox Settings (about:preferences)
+   - Go to Privacy & Security section
+   - Scroll to "Certificates" and click "View Certificates"
+   - Select "Your Certificates" tab
+   - Click "Import" button
+   - Choose `badssl.com-client.p12` file
+   - Enter password: `badssl.com`
+   - Visit: https://client.badssl.com/
+
+3. **Chrome/Chromium:**
+   - Open Settings → Privacy and security → Security
+   - Click "Manage certificates"
+   - Go to "Personal" tab
+   - Click "Import" and select the P12 file
+   - Enter password: `badssl.com`
+   - Visit the BadSSL site
+
+### Verification
+After importing the certificate, you should see a green page with "client.badssl.com" text when visiting the site.
+
+### Alternative System Certificate Installation (Linux)
+```bash
+# Install certificate system-wide using NSS database
+pk12util -i badssl.com-client.p12 -d sql:$HOME/.pki/nssdb
+# Enter password: badssl.com
+```
+
+### Browser Troubleshooting
+- **400 Bad Request**: Certificate not imported or not selected during connection
+- **Connection refused**: Network connectivity issue
+- **Certificate selection dialog**: Choose the BadSSL certificate from the list
+
+## Security Features
+
+- Proper certificate validation and chain verification
+- TLS 1.2/1.3 protocol support with strong cipher suites
+- Rate limiting (10 requests per minute per IP address)
+- IP whitelisting and access control
+- Secure HTTP headers implementation
+- Input validation and sanitization
+- Comprehensive error handling and logging
+- Real-time monitoring through web dashboard
+
+## Troubleshooting
+
+### Common Issues
+
+1. **Certificate errors**: 
+   - Ensure `badssl.com-client.p12` file is present in project directory
+   - Verify certificate password is `badssl.com`
+   - Check PEM files (`client-cert.pem`, `client-key.pem`) exist
+
+2. **Connection refused**:
+   - Check if ports 8444/8080 are available: `netstat -tulpn | grep :8444`
+   - Ensure firewall allows connections to these ports
+   - Try running with different ports if needed
+
+3. **Browser access issues**:
+   - Import certificate following instructions above
+   - Clear browser cache and restart browser
+   - Check certificate was imported in correct browser profile
+
+4. **404 errors**:
+   - Normal behavior for non-existent BadSSL paths (like `/api`, `/dashboard`)
+   - 404 responses actually prove SSL authentication is working
+   - Only root path (`/`) exists on client.badssl.com
+
+5. **Compilation errors**:
+   ```bash
+   ./run.sh clean      # Remove old class files
+   ./run.sh compile    # Recompile all Java files
+   ```
+
+6. **SSL handshake failures**:
+   - Verify system time is correct
+   - Check if corporate firewall is blocking SSL
+   - Try different TLS versions: `--tlsv1.2` or `--tlsv1.3`
+
+### Debug Commands
 
 ```bash
-./run.sh test    # Run proxy tests
-./run.sh suite   # Run complete test suite
-```
-```
+# Check certificate details
+openssl pkcs12 -in badssl.com-client.p12 -passin pass:badssl.com -info
 
-##  Technical Implementation
+# Verify PEM files
+openssl x509 -in client-cert.pem -text -noout
+openssl rsa -in client-key.pem -check
 
-```
-java-ssl/
-├── SSLProxy.java              # Basic SSL proxy implementation
-├── AdvancedSSLProxy.java      # Advanced SSL proxy with client cert support
-├── P12SSLProxy.java           # P12 certificate-enabled SSL proxy
-├── P12SSLClient.java          # SSL client with P12 certificate authentication
-├── ProxyTestClient.java       # Test client for proxy functionality
-├── ProxyTestSuite.java        # Comprehensive test suite
-├── badssl.com-client.p12      # P12 certificate file
-├── CLIENT_DELIVERY_GUIDE.md   # Client delivery instructions
-├── P12_SSL_GUIDE.md          # P12 certificate integration guide
-├── PROJECT_OVERVIEW.md        # Technical project overview
-├── PROXY_README.md           # Proxy-specific documentation
-└── README.md                 # Main project documentation
+# Test network connectivity
+ping badssl.com
+nslookup client.badssl.com
+
+# Check Java version
+java -version
+javac -version
 ```
 
-### Key Features
+## Expected Results
 
-#### SSL/TLS Implementation
-```java
-// Create SSL context with P12 certificate
-SSLContext sslContext = SSLContext.getInstance("TLS");
-sslContext.init(keyManagerFactory.getKeyManagers(), trustManagers, new SecureRandom());
+### Successful BadSSL Connection
+- **curl**: HTTP 200 OK response with green HTML page content
+- **Browser**: Green page displaying "client.badssl.com" in large text
+- **Java client**: Successful SSL handshake with certificate authentication
+
+### Understanding 404 Responses
+- Paths like `/dashboard`, `/api`, `/json` don't exist on BadSSL server
+- These 404 responses actually prove SSL authentication is working correctly
+- Only the root path (`/`) contains actual content
+
+### SSL Handshake Success Indicators
+```
+* SSL connection using TLSv1.2 / ECDHE-RSA-AES256-GCM-SHA384
+* Server certificate: *.badssl.com
+* SSL certificate verify ok
+< HTTP/1.1 200 OK
 ```
 
-#### P12 Certificate Loading
-```java
-// Load P12 keystore
-KeyStore keyStore = KeyStore.getInstance("PKCS12");
-keyStore.load(new FileInputStream("badssl.com-client.p12"), "badssl.com".toCharArray());
-```
+## Quick Setup Guide
 
-#### SSL Proxy Server
-```java
-// Create SSL server socket with client authentication
-SSLServerSocket serverSocket = (SSLServerSocket) factory.createServerSocket(8444);
-serverSocket.setWantClientAuth(true);
-```
+1. **Clone and compile:**
+   ```bash
+   git clone <repository>
+   cd java-ssl
+   ./run.sh compile
+   ```
 
-##  Configuration
+2. **Test SSL connection:**
+   ```bash
+   curl -v --cert client-cert.pem --key client-key.pem https://client.badssl.com/
+   ```
 
-### SSL Settings
-- **Default Proxy Port**: 8444
-- **Supported Protocols**: TLS 1.2, TLS 1.3
-- **Cipher Suites**: AES-256-GCM, AES-128-GCM
-- **Client Authentication**: Optional/Required
+3. **Start services:**
+   ```bash
+   ./run.sh full    # Starts both proxy and dashboard
+   ```
 
-### Certificate Configuration
-- **P12 File**: `badssl.com-client.p12`
-- **Password**: `badssl.com`
-- **Certificate Subject**: CN=BadSSL Client Certificate
-- **Validity**: September 24, 2025 - September 24, 2027
+4. **Access dashboard:**
+   - Open browser to: http://localhost:8080
 
-##  Testing
+## License
 
-The project includes comprehensive testing:
+This project is for educational and testing purposes.
 
-```bash
-# Test basic proxy functionality
-java ProxyTestClient
-
-# Run complete test suite
-java ProxyTestSuite
-```
-
-### Test Results
--  SSL handshake validation
--  Client certificate authentication  
--  TLS 1.2/1.3 protocol support
--  Strong cipher suites
-
-##  Security
-
-- **Mutual TLS** - Client & server certificate validation
-- **Strong Encryption** - AES-256-GCM cipher suites
-- **Secure Storage** - PKCS#12 password-protected certificates
-
-##  License
-
-MIT License - see LICENSE file for details.
-
-##  Author
-
-**Saifullah Shaukat** - [Saifullah Shaukat](https://github.com/saifullahshaukat)
-
----
- **Secure SSL connections with Java**
+Ready to use your secure SSL proxy for development and testing!
