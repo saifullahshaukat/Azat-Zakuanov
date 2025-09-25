@@ -9,10 +9,52 @@ A secure SSL proxy server with client certificate authentication and web dashboa
 ## Quick Start
 
 ### Prerequisites
+
+#### For All Platforms:
 - Java 8 or higher
 - Client certificate file (PKCS#12 format)
 
+#### For Windows Users:
+- Java JDK installed and `javac`/`java` in PATH
+- Windows PowerShell, Command Prompt, or Windows Terminal
+- Optional: curl for Windows (for command-line SSL testing)
+
+#### For Linux/macOS Users:
+- Java JDK installed
+- Bash shell
+- curl (usually pre-installed)
+
 ### Running the Application
+
+#### For Windows Users (PowerShell/Command Prompt):
+
+1. **Compile all Java files:**
+   ```cmd
+   javac *.java
+   ```
+
+2. **Start Secure SSL Proxy:**
+   ```cmd
+   java SecureSSLProxy
+   ```
+
+3. **Start Web Dashboard:**
+   ```cmd
+   java DashboardServer
+   ```
+
+4. **Start Both (using batch file):**
+   ```cmd
+   run.bat full
+   ```
+
+5. **Test BadSSL connections:**
+   ```cmd
+   java BadSSLClient
+   java EnhancedBadSSLClient
+   ```
+
+#### For Linux/macOS Users (Bash):
 
 1. **Start Secure SSL Proxy:**
    ```bash
@@ -57,7 +99,8 @@ java-ssl/
 │   ├── client-cert.pem         # PEM certificate
 │   └── client-key.pem          # PEM private key
 ├── Scripts
-│   ├── run.sh                  # Build and run script
+│   ├── run.sh                  # Build and run script (Linux/macOS)
+│   ├── run.bat                 # Build and run script (Windows)
 │   └── browser_setup.sh        # Browser certificate setup
 └── Documentation
     └── README.md               # Complete project documentation
@@ -72,6 +115,43 @@ Environment variables:
 
 ## Available Commands
 
+### Windows (PowerShell/CMD):
+```cmd
+:: Compile all files
+javac *.java
+
+:: Start secure proxy only
+java SecureSSLProxy
+
+:: Start dashboard only  
+java DashboardServer
+
+:: Start both services (using batch file)
+run.bat full
+
+:: Test BadSSL connection
+java BadSSLClient
+
+:: Run enhanced BadSSL tests
+java EnhancedBadSSLClient
+
+:: Clean compiled files
+del *.class
+```
+
+### Windows Batch Commands:
+```cmd
+:: Use the provided batch file for easy management
+run.bat compile     :: Compile all Java files
+run.bat secure      :: Start SSL proxy server
+run.bat dashboard   :: Start web dashboard
+run.bat full        :: Start both services
+run.bat badssl      :: Test BadSSL connection
+run.bat enhanced    :: Run enhanced BadSSL tests
+run.bat clean       :: Clean compiled files
+```
+
+### Linux/macOS (Bash):
 ```bash
 # Compile all files
 ./run.sh compile
@@ -150,6 +230,24 @@ curl -v --ciphers ECDHE-RSA-AES256-GCM-SHA384 --cert client-cert.pem --key clien
 ```
 
 ### Java Testing
+
+#### Windows:
+```cmd
+:: Compile first (if not already done)
+javac *.java
+
+:: Run BadSSL client test
+java BadSSLClient
+
+:: Run enhanced tests with multiple endpoints
+java EnhancedBadSSLClient
+
+:: Or use batch file
+run.bat badssl
+run.bat enhanced
+```
+
+#### Linux/macOS:
 ```bash
 # Run BadSSL client test
 ./run.sh badssl
@@ -159,6 +257,20 @@ curl -v --ciphers ECDHE-RSA-AES256-GCM-SHA384 --cert client-cert.pem --key clien
 ```
 
 ### Testing SSL Proxy
+
+#### Windows:
+```cmd
+:: Start the SSL proxy first
+java SecureSSLProxy
+
+:: Or use batch file
+run.bat secure
+
+:: Then test through the proxy (in another terminal/PowerShell)
+curl -v --cert client-cert.pem --key client-key.pem --proxy https://localhost:8444 https://client.badssl.com/
+```
+
+#### Linux/macOS:
 ```bash
 # Start the SSL proxy first
 ./run.sh secure
@@ -173,6 +285,13 @@ To access BadSSL websites in your browser with client certificate authentication
 
 ### Setup Steps
 
+#### Windows:
+1. **Run the browser setup helper:**
+   ```cmd
+   browser_setup.bat
+   ```
+
+#### Linux/macOS:
 1. **Run the browser setup helper:**
    ```bash
    ./browser_setup.sh
@@ -297,6 +416,30 @@ javac -version
 ```
 
 ## Quick Setup Guide
+
+### Windows Setup:
+
+1. **Clone and compile:**
+   ```cmd
+   git clone <repository>
+   cd Azat-Zakuanov
+   javac *.java
+   ```
+
+2. **Test SSL connection:**
+   ```cmd
+   java BadSSLClient
+   ```
+
+3. **Start services:**
+   ```cmd
+   run.bat full    :: Starts both proxy and dashboard
+   ```
+
+4. **Access dashboard:**
+   - Open browser to: http://localhost:8080
+
+### Linux/macOS Setup:
 
 1. **Clone and compile:**
    ```bash
