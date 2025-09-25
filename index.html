@@ -531,7 +531,6 @@
                 if (response.status === 404) {
                     addToTerminal('💡 404 Explanation: This is NORMAL behavior!', 'warning');
                     addToTerminal('   ✅ SSL connection with client certificate: SUCCESS', 'success');
-                    addToTerminal('   ❌ Endpoint /dashboard, /json etc.: Do not exist (404)', 'warning');
                     addToTerminal('   📝 Only the root path (/) exists on client.badssl.com', 'info');
                     addToTerminal('   🎯 The SSL authentication is working perfectly!', 'success');
                 }
@@ -570,13 +569,9 @@
             addToTerminal('* issuer: C=US; ST=California; L=San Francisco; O=BadSSL; CN=BadSSL Client Root Certificate Authority', 'info');
             
             await sleep(1200);
-            addToTerminal('3. Testing different endpoints...', 'info');
+            addToTerminal('3. Testing available endpoint...', 'info');
             const endpoints = [
-                { path: '/', status: 200, result: '✅ 200 - OK' },
-                { path: '/dashboard', status: 404, result: '❌ 404 - Not Found' },
-                { path: '/json', status: 404, result: '❌ 404 - Not Found' },
-                { path: '/api/test', status: 404, result: '❌ 404 - Not Found' },
-                { path: '/status', status: 404, result: '❌ 404 - Not Found' }
+                { path: '/', status: 200, result: '✅ 200 - OK' }
             ];
             
             for (const endpoint of endpoints) {
